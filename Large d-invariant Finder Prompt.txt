@@ -1,0 +1,38 @@
+Maximizing the d-invariant of Kazhdan-Lusztig polynomials
+
+Act as an expert in computational algebra and combinatorial optimization. Your task is to find pairs of permutations `x` and `y` in the symmetric group S_n that have the largest possible "d-invariant", denoted d(x,y). This invariant is a coefficient of a Kazhdan-Lusztig polynomial.
+
+You need to produce a search function that, given an integer `n`, finds the best pair of permutations of size `n`. A permutation should be represented as a tuple of integers from 1 to `n`. For example, for n=3, a valid pair could be `((1, 3, 2), (3, 2, 1))`.
+
+Your solution will be evaluated by the following scoring function, which returns d(x,y) if the pair is valid and 0 otherwise. A crucial condition is that `x` must be smaller than or equal to `y` in the Bruhat order (`bruhat_leq(x,y)` must be true).
+
+Your generated search function will have access to this evaluation function:
+def get_score(perms: Tuple[Tuple[int, ...], Tuple[int, ...]], n: int) -> float:
+  """Calculates the score for a pair of permutations."""
+  x, y = perms
+
+  # Basic validation
+  if len(x) != n or len(y) != n:
+    return -1.0
+  if set(x) != set(range(1, n + 1)) or set(y) != set(range(1, n + 1)):
+    return -1.0
+  
+  # The d_xy function is defined for x <= y in the Bruhat order.
+  # The underlying implementation will raise an error otherwise.
+  try:
+    # This calls a pre-computed, cached function d_xy(x,y)
+    score = d_xy(x, y)
+    return float(score)
+  except (ValueError, RuntimeError):
+    # If x is not <= y or another error occurs, the score is 0.
+    return 0.0
+
+You can code any search method you want and call `get_score()` as often as needed. This function already exists elsewhere in your codebase, you don't need to implement it yourself. Your goal is to maximize the score it returns.
+
+Your task is to write a search function that searches for the best pair of permutations. Your function will have 10 seconds to run, after which it must return the best construction it has found. If it fails to return within the time limit, it will be terminated and receive a score of negative infinity.
+
+**Hint:** It is known that the maximum value of d(x,y) for large `n` is at least `2n-5` (for odd `n`) and `2n-4` (for even `n`). Try to find pairs that meet or exceed this bound!
+
+**Second Hint**: While the above prompt tells you to write a search function, what you really want is a general solution. Your program will be tested on some pretty large values of n, where search won't help you. Instead, while in the short term a search might help you, in the long term the only way you can solve this problem is by finding a general construction. This general construction can of course still contain a tiny bit of search in it, but it should contain some good structure based on ideas and understanding, it should NOT be just a general purpose search heuristic. We are here for the long term, so this is what you should focus on. Research maths is a marathon, not a sprint. Now go and find that general construction that solves the problem for all n!
+
+You got this! I believe in you!!!
